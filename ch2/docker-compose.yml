@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - app_network
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app_network
+  your_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app_network
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/your_database_name
+      - RABBITMQ_URI=amqp://guest:guest@rabbitmq:5672/
+
+networks:
+  app_network:
